@@ -23,7 +23,7 @@ app.get('/api/compile', (req, res) => {
 app.post('/api/compile', (req, res) => {
     const { code, input, languageId } = req.body;
 
-    if (languageId !== 'c') { // Assicurati di utilizzare l'ID corretto per il linguaggio C
+    if (languageId !== '48') { // Assicurati di utilizzare l'ID corretto per il linguaggio C
         return res.json({
             success: false,
             output: 'Linguaggio non supportato'
