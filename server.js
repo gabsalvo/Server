@@ -33,7 +33,7 @@ app.get('/api/compile', (req, res) => {
 app.post('/api/compile', cors(corsOptions), (req, res) => {
     const { code, input, languageId } = req.body;
 
-    if (languageId !== '48') {
+    if (languageId !== 48) {
         return res.json({
             success: false,
             output: 'Linguaggio non supportato'
