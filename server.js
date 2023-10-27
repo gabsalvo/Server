@@ -37,9 +37,9 @@ app.post("/api/compile", (req, res) => {
     });
   }
 
-  const fileName = `temp_code.c`; // Nome del file fisso
+  const fileName = `temp_code`;
 
-  fs.writeFileSync(fileName, code);
+  fs.writeFileSync(`${fileName}.c`, code);
 
   try {
     exec(`gcc ${fileName} -o ${fileName}.out`, (err) => {
