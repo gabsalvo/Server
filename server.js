@@ -42,7 +42,7 @@ app.post("/api/compile", (req, res) => {
   fs.writeFileSync(`${fileName}.c`, code);
 
   try {
-    exec(`gcc ${fileName} -o ${fileName}.out`, (err) => {
+    exec(`gcc ${fileName}.c -o ${fileName}.out`, (err) => {
       if (err) {
         return res.json({
           success: false,
@@ -68,7 +68,7 @@ app.post("/api/compile", (req, res) => {
       );
     });
   } finally {
-    fs.unlinkSync(fileName);
+    fs.unlinkSync(`${fileName}.c`);
     if (fs.existsSync(`${fileName}.out`)) {
       fs.unlinkSync(`${fileName}.out`);
     }
