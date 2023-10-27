@@ -8,9 +8,9 @@ const app = express();
 const PORT = 3000;
 
 const corsOptions = {
-  origin: true,
-  methods: ["POST"],
-  allowedHeaders: ["Content-Type"],
+  origin: 'https://hacked23-24.web.app',
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type", "ngrok-skip-browser-warning"],
 };
 
 // Middlewares
@@ -38,7 +38,7 @@ app.post("/api/compile", (req, res) => {
   }
 
   const uniqueFileName = `temp_${Date.now()}_${Math.random().toString(36).slice(2, 11)}.c`;
-  
+
   fs.writeFileSync(uniqueFileName, code);
 
   try {
