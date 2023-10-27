@@ -8,17 +8,14 @@ const app = express();
 const PORT = 3000;
 
 const corsOptions = {
-  //origin: 'https://hacked23-24.web.app',
   origin: true,
   methods: ["POST"],
   allowedHeaders: ["Content-Type"],
 };
 
-// Abilita CORS per tutte le altre rotte (se necessario)
-app.use(cors());
-
 // Middlewares
 app.use(bodyParser.json());
+app.use(cors(corsOptions)); // Usa solo il middleware CORS globale
 
 // Endopoint Get
 app.get("/", (req, res) => {
@@ -30,7 +27,7 @@ app.get("/api/compile", (req, res) => {
 });
 
 // Endpoint POST /api/compile
-app.post("/api/compile", cors(corsOptions), (req, res) => {
+app.post("/api/compile", (req, res) => {
   const { code, input, languageId } = req.body;
 
   if (languageId !== 48) {
@@ -40,42 +37,42 @@ app.post("/api/compile", cors(corsOptions), (req, res) => {
     });
   }
 
-  const uniqueFileName = `temp_${Date.now()}_${Math.random()
-    .toString(36)
-    .from(2, 9)}.c`;
-
+  const uniqueFileName = `temp_${Date.now()}_${Math.random().toString(36).slice(2, 11)}.c`;
+  
   fs.writeFileSync(uniqueFileName, code);
 
-  exec(`gcc ${uniqueFileName} -o ${uniqueFileName}.out`, (err) => {
-    if (err) {
-      fs.unlinkSync(uniqueFileName);
-
-      return res.json({
-        success: false,
-        output: "Errore durante la compilazione: " + err.message,
-      });
-    }
-
-    exec(
-      `./${uniqueFileName}.out`,
-      { timeout: 5000 },
-      (err, stdout, stderr) => {
-        fs.unlinkSync(uniqueFileName);
-        fs.unlinkSync(`${uniqueFileName}.out`);
-
-        if (err) {
-          return res.json({
-            success: false,
-            output: `Errore durante l'esecuzione: ` + stderr,
-          });
-        }
-        res.json({
-          success: true,
-          output: stdout,
+  try {
+    exec(`gcc ${uniqueFileName} -o ${uniqueFileName}.out`, (err) => {
+      if (err) {
+        return res.json({
+          success: false,
+          output: "Errore durante la compilazione: " + err.message,
         });
       }
-    );
-  });
+
+      exec(
+        `./${uniqueFileName}.out`,
+        { timeout: 5000 },
+        (err, stdout, stderr) => {
+          if (err) {
+            return res.json({
+              success: false,
+              output: `Errore durante l'esecuzione: ` + stderr,
+            });
+          }
+          res.json({
+            success: true,
+            output: stdout,
+          });
+        }
+      );
+    });
+  } finally {
+    fs.unlinkSync(uniqueFileName);
+    if (fs.existsSync(`${uniqueFileName}.out`)) {
+      fs.unlinkSync(`${uniqueFileName}.out`);
+    }
+  }
 });
 
 app.listen(PORT, () => {
