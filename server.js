@@ -37,12 +37,12 @@ app.post("/api/compile", (req, res) => {
     });
   }
 
-  const uniqueFileName = `temp_${Date.now()}_${Math.random().toString(36).slice(2, 11)}.c`;
+  const fileName = `temp_code.c`; // Nome del file fisso
 
-  fs.writeFileSync(uniqueFileName, code);
+  fs.writeFileSync(fileName, code);
 
   try {
-    exec(`gcc ${uniqueFileName} -o ${uniqueFileName}.out`, (err) => {
+    exec(`gcc ${fileName} -o ${fileName}.out`, (err) => {
       if (err) {
         return res.json({
           success: false,
@@ -51,7 +51,7 @@ app.post("/api/compile", (req, res) => {
       }
 
       exec(
-        `./${uniqueFileName}.out`,
+        `./${fileName}.out`,
         { timeout: 5000 },
         (err, stdout, stderr) => {
           if (err) {
@@ -68,9 +68,9 @@ app.post("/api/compile", (req, res) => {
       );
     });
   } finally {
-    fs.unlinkSync(uniqueFileName);
-    if (fs.existsSync(`${uniqueFileName}.out`)) {
-      fs.unlinkSync(`${uniqueFileName}.out`);
+    fs.unlinkSync(fileName);
+    if (fs.existsSync(`${fileName}.out`)) {
+      fs.unlinkSync(`${fileName}.out`);
     }
   }
 });
