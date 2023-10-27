@@ -8,7 +8,8 @@ const app = express();
 const PORT = 3000;
 
 const corsOptions = {
-    origin: 'https://hacked23-24.web.app',
+    //origin: 'https://hacked23-24.web.app',
+    origin: true,
     methods: ['POST'],
     allowedHeaders: ['Content-Type']
 };
