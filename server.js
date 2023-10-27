@@ -15,7 +15,7 @@ const corsOptions = {
 
 // Middlewares
 app.use(bodyParser.json());
-app.use(cors(corsOptions)); // Usa solo il middleware CORS globale
+app.use(cors(corsOptions)); 
 
 // Endopoint Get
 app.get("/", (req, res) => {
