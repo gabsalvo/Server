@@ -8,7 +8,7 @@ const app = express();
 const PORT = 3000;
 
 const corsOptions = {
-  origin: true,//'https://hacked23-24.web.app',
+  origin: true, //'https://hacked23-24.web.app',
   methods: ["GET", "POST"],
   allowedHeaders: ["Content-Type", "ngrok-skip-browser-warning"],
 };
@@ -34,7 +34,9 @@ app.post("/api/compile", (req, res) => {
     });
   }
 
-  const uniqueFileName = `temp_${Date.now()}_${Math.random().toString(36).slice(2, 11)}.c`;
+  const uniqueFileName = `temp_${Date.now()}_${Math.random()
+    .toString(36)
+    .slice(2, 11)}.c`;
 
   fs.writeFileSync(uniqueFileName, code);
 
@@ -47,19 +49,23 @@ app.post("/api/compile", (req, res) => {
       });
     }
 
-    exec(`./${uniqueFileName}.out`, { timeout: 5000 }, (err, stdout, stderr) => {
-      cleanupFiles(uniqueFileName);
-      if (err) {
-        return res.json({
-          success: false,
-          output: `Errore durante l'esecuzione: ` + stderr,
+    exec(
+      `./${uniqueFileName}.out`,
+      { timeout: 5000 },
+      (err, stdout, stderr) => {
+        cleanupFiles(uniqueFileName);
+        if (err) {
+          return res.json({
+            success: false,
+            output: `Errore durante l'esecuzione: ` + stderr,
+          });
+        }
+        res.json({
+          success: true,
+          output: stdout,
         });
       }
-      res.json({
-        success: true,
-        output: stdout,
-      });
-    });
+    );
   });
 });
 
