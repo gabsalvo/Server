@@ -34,19 +34,21 @@ app.post("/api/compile", (req, res) => {
     });
   }
 
-  const fileName = `temp_code.c`;
+  const uniqueFileName = `temp_${Date.now()}_${Math.random().toString(36).slice(2, 11)}.c`;
 
-  fs.writeFileSync(fileName, code);
+  fs.writeFileSync(uniqueFileName, code);
 
-  exec(`gcc ${fileName} -o ${fileName}.out`, (err) => {
+  exec(`gcc ${uniqueFileName} -o ${uniqueFileName}.out`, (err) => {
     if (err) {
+      cleanupFiles(uniqueFileName);
       return res.json({
         success: false,
         output: "Errore durante la compilazione: " + err.message,
       });
     }
 
-    exec(`./${fileName}.out`, { timeout: 5000 }, (err, stdout, stderr) => {
+    exec(`./${uniqueFileName}.out`, { timeout: 5000 }, (err, stdout, stderr) => {
+      cleanupFiles(uniqueFileName);
       if (err) {
         return res.json({
           success: false,
@@ -61,15 +63,15 @@ app.post("/api/compile", (req, res) => {
   });
 });
 
+function cleanupFiles(filename) {
+  if (fs.existsSync(filename)) {
+    fs.unlinkSync(filename);
+  }
+  if (fs.existsSync(`${filename}.out`)) {
+    fs.unlinkSync(`${filename}.out`);
+  }
+}
+
 app.listen(PORT, () => {
   console.log(`Server in ascolto sulla porta ${PORT}...`);
-});
-
-process.on('exit', () => {
-  if (fs.existsSync('temp_code.c')) {
-    fs.unlinkSync('temp_code.c');
-  }
-  if (fs.existsSync('temp_code.c.out')) {
-    fs.unlinkSync('temp_code.c.out');
-  }
 });
