@@ -64,7 +64,7 @@ app.post("/api/compile", (req, res) => {
           success: true,
           output: stdout,
         });
-      }
+      },
     );
   });
 });
